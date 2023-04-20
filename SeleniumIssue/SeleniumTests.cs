@@ -24,7 +24,7 @@ public class SeleniumTests
     [Theory]
     [InlineData("http://localhost:4444")]
     [InlineData("http://localhost:4445")]
-    public async Task TestSeleniumScriptExecution(string gridUri)
+    public async Task TestSeleniumSocketConnection(string gridUri)
     {
         var chromeOptions = new ChromeOptions();
         var driver = new RemoteWebDriver(new Uri(gridUri), chromeOptions);
