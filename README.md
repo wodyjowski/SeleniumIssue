@@ -9,7 +9,7 @@ https://github.com/microsoft/playwright/issues/18892
 * docker
 
 ## Usage
-Run `TestSeleniumScriptExecution` test.
+Run `SeleniumSocketConnection_ShouldWork` test.
 
 ## Description
 
