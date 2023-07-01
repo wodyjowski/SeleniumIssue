@@ -17,8 +17,12 @@ public class SeleniumTests
             RedirectStandardError = true,
         };
         var proc = Process.Start(startInfo);
-        
+
         proc!.WaitForExit();
+        if (proc.ExitCode != 0)
+        {
+            throw new Exception(proc.StandardError.ReadToEnd());
+        }
     }
 
     [Theory]
