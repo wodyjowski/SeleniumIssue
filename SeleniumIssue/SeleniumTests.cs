@@ -1,54 +1,36 @@
-using System.Diagnostics;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Remote;
-using OpenQA.Selenium.DevTools.V111.Page;
+using OpenQA.Selenium.DevTools.V117.Page;
 
 namespace SeleniumIssue;
 
-public class SeleniumTests
+public class SeleniumTests : IClassFixture<SeleniumTestFixture>
 {
-    public SeleniumTests()
-    {
-        var startInfo = new ProcessStartInfo()
-        {
-            FileName = "docker",
-            Arguments = "compose -f ./selenium-grid.yml up -d",
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-        };
-        var proc = Process.Start(startInfo);
+    private readonly SeleniumTestFixture fixture;
 
-        proc!.WaitForExit();
-        if (proc.ExitCode != 0)
-        {
-            throw new Exception(proc.StandardError.ReadToEnd());
-        }
+    public SeleniumTests(SeleniumTestFixture fixture)
+    {
+        this.fixture = fixture;
     }
 
     [Theory]
-    [InlineData("http://localhost:4444")]
-    [InlineData("http://localhost:4445")]
-    public async Task SeleniumSocketConnection_ShouldWork(string gridUri)
+    [InlineData(100)]
+    [InlineData(1000)]
+    [InlineData(10000)]
+    [InlineData(100000)]
+    public async Task SeleniumSocketConnection_ShouldWork(int count)
     {
         var chromeOptions = new ChromeOptions();
-        var driver = new RemoteWebDriver(new Uri(gridUri), chromeOptions);
+        using var driver = new RemoteWebDriver(new Uri(fixture.GridUrl), chromeOptions);
 
         driver.Navigate().GoToUrl("https://google.com");
 
-        var script = $"'{string.Join(string.Empty, Enumerable.Repeat("test", 100000))}'";
-        
-        try
+        var script = $"'{string.Join(string.Empty, Enumerable.Repeat("test", count))}'";
+            
+        var session = driver.GetDevToolsSession();
+        await session.SendCommand(new AddScriptToEvaluateOnLoadCommandSettings()
         {
-            var session = driver.GetDevToolsSession();
-            await session.SendCommand(new AddScriptToEvaluateOnLoadCommandSettings()
-            {
-                ScriptSource = script
-            });
-        }
-        catch
-        {
-            driver.Dispose();
-            throw;
-        }
+            ScriptSource = script
+        });
     }
 }

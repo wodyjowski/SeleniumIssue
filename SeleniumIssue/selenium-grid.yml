@@ -1,35 +1,15 @@
 ﻿version: "3"
-services:
-  selenium-hub-good:
-    image: selenium/hub:4.5.0
-    container_name: selenium-hub-good
+services:        
+  selenium-hub-bad:
+    image: selenium/hub:4.13.0
+    container_name: selenium-hub-bad
     ports:
       - "4444:4444"
     environment:
       - GRID_TIMEOUT=30
 
-  selenium-node-chrome:
-    image: selenium/node-chrome:4.8.3
-    shm_size: 2g
-    depends_on:
-      - selenium-hub-good
-    environment:
-      - SE_NODE_MAX_SESSIONS=2
-      - SE_EVENT_BUS_HOST=selenium-hub-good
-      - SE_EVENT_BUS_PUBLISH_PORT=4442
-      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
-      - SE_NODE_GRID_URL=http://localhost:4444
-        
-  selenium-hub-bad:
-    image: selenium/hub:4.8.3
-    container_name: selenium-hub-bad
-    ports:
-      - "4445:4444"
-    environment:
-      - GRID_TIMEOUT=30
-
   selenium-node-chrome1:
-    image: selenium/node-chrome:4.8.3
+    image: selenium/node-chrome:4.13.0
     shm_size: 2g
     depends_on:
       - selenium-hub-bad
@@ -38,4 +18,4 @@ services:
       - SE_EVENT_BUS_HOST=selenium-hub-bad
       - SE_EVENT_BUS_PUBLISH_PORT=4442
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
-      - SE_NODE_GRID_URL=http://localhost:4445
+      - SE_NODE_GRID_URL=http://localhost:4444
